@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Magical Garden Puzzle</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%2378a565'/><path d='M30,70 C20,50 80,50 70,70' fill='%237bc86c' stroke='%235d8047' stroke-width='2'/><circle cx='50' cy='30' r='10' fill='%23ffcb77'/></svg>" />
+    <style>
+      /* Global animation classes used by SVG components */
+      @keyframes float {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+      }
+      
+      @keyframes flutter {
+        from { transform: rotate(-5deg); }
+        to { transform: rotate(5deg); }
+      }
+      
+      @keyframes sway {
+        0% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+        100% { transform: rotate(-2deg); }
+      }
+      
+      /* Custom CSS for particle effects */
+      .water-particles {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(127, 179, 213, 0.8) 10%, transparent 70%);
+        animation: water-anim 2s ease-out forwards;
+      }
+      
+      @keyframes water-anim {
+        0% { transform: scale(0.2); opacity: 1; }
+        100% { transform: scale(1.5); opacity: 0; }
+      }
+      
+      .magic-particles {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(254, 255, 156, 0.8) 10%, rgba(177, 156, 217, 0.5) 50%, transparent 70%);
+        animation: magic-anim 2s ease-out forwards;
+      }
+      
+      @keyframes magic-anim {
+        0% { transform: scale(0.2); opacity: 1; }
+        50% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.5); opacity: 0; }
+      }
+      
+      /* Styles for puzzle related animations */
+      .backface-hidden {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      
+      .transform-style-3d {
+        transform-style: preserve-3d;
+      }
+      
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
+      
+      /* Fade-in animation */
+      .animate-fadeIn {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
