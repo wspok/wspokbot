@@ -65,11 +65,11 @@ client.once(Events.ClientReady, async (c) => {
       },
       {
         name: 'frames',
-        description: 'Generate frames based on your prompt',
+        description: 'Extract frames from a GIF',
         options: [
           {
-            name: 'prompt',
-            description: 'The prompt for the frames',
+            name: 'gif_url',
+            description: 'The URL of the GIF to extract frames from',
             type: ApplicationCommandOptionType.String,
             required: true,
           }
@@ -233,21 +233,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
 
       case 'frames': {
-        const prompt = options.getString('prompt');
+        const gifUrl = options.getString('gif_url');
         
-        if (!prompt) {
-          await interaction.editReply('Please provide a prompt.');
+        if (!gifUrl) {
+          await interaction.editReply('Please provide a valid GIF URL.');
           return;
         }
         
         try {
-          const result = await createFrames(prompt);
+          const result = await createFrames(gifUrl);
           if (result.success) {
             const attachment = new AttachmentBuilder(result.filePath, { name: 'frames.png' });
             
             const embed = new EmbedBuilder()
-              .setTitle('Frames Generated')
-              .setDescription(`Generated frames for: ${prompt}`)
+              .setTitle('GIF Frames Extracted')
+              .setDescription(`Extracted frames from: ${gifUrl}`)
               .setColor('#FF00FF');
             
             await interaction.editReply({ embeds: [embed], files: [attachment] });
@@ -261,11 +261,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
               }
             }, 5000);
           } else {
-            await interaction.editReply(`Failed to generate frames: ${result.error}`);
+            await interaction.editReply(`Failed to extract frames: ${result.error}`);
           }
         } catch (error) {
-          console.error('Frames generation error:', error);
-          await interaction.editReply('An error occurred while generating the frames.');
+          console.error('Frame extraction error:', error);
+          await interaction.editReply('An error occurred while extracting frames from the GIF.');
         }
         break;
       }

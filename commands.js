@@ -83,70 +83,104 @@ async function createGif(prompt) {
 }
 
 /**
- * Create frames based on a prompt (similar to Assyst /frames command)
- * @param {string} prompt - The prompt for the frames
+ * Split a GIF into frames (similar to Assyst /frames command)
+ * @param {string} gifUrl - The URL of the GIF to split into frames
  * @returns {Promise<{success: boolean, filePath?: string, error?: string}>}
  */
-async function createFrames(prompt) {
+async function createFrames(gifUrl) {
   try {
-    console.log(`Creating frames with prompt: ${prompt}`);
+    console.log(`Splitting GIF into frames: ${gifUrl}`);
     
-    // Similar implementation to createGif, but requesting multiple separate images
-    // instead of an animation, and then combining them into a grid
-    
-    // Example implementation pattern (commented out as it requires an API key)
-    /*
-    // Generate multiple images with slight variations
-    const numFrames = 4;
-    const imagePromises = [];
-    
-    for (let i = 0; i < numFrames; i++) {
-      // Add some variation to each frame
-      const framePrompt = `${prompt}, frame ${i+1} of a sequence`;
-      
-      const response = await axios.post('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
-        text_prompts: [{ text: framePrompt }],
-        cfg_scale: 7,
-        height: 512,
-        width: 512,
-        samples: 1,
-        steps: 30,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.STABILITY_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-      });
-      
-      const base64Image = response.data.artifacts[0].base64;
-      imagePromises.push(Buffer.from(base64Image, 'base64'));
+    if (!isValidUrl(gifUrl)) {
+      return {
+        success: false,
+        error: "Please provide a valid GIF URL"
+      };
     }
     
-    // Wait for all images to be generated
-    const imageBuffers = await Promise.all(imagePromises);
+    // Implementation pattern for extracting frames (commented out as it requires image processing libraries)
+    /*
+    // Download the GIF
+    const response = await axios.get(gifUrl, { responseType: 'arraybuffer' });
+    const gifBuffer = Buffer.from(response.data);
+    
+    // Use a library like 'gif-frames' to extract frames
+    const frameData = await gifFrames({ 
+      url: gifBuffer, 
+      frames: 'all', 
+      outputType: 'png',
+      cumulative: true
+    });
+    
+    // Limit to a reasonable number of frames (max 16)
+    const maxFrames = Math.min(frameData.length, 16);
+    const selectedFrames = frameData.slice(0, maxFrames);
     
     // Use a library like sharp to create a grid of images
     const sharp = require('sharp');
     const compositeOps = [];
     
-    // Create a 2x2 grid
-    imageBuffers.forEach((buffer, index) => {
-      const x = (index % 2) * 512;
-      const y = Math.floor(index / 2) * 512;
+    // Determine grid dimensions
+    const gridSize = Math.ceil(Math.sqrt(maxFrames)); // e.g., 4x4 grid for 16 frames
+    const frameSize = 256; // fixed size for each frame in the grid
+    const totalSize = frameSize * gridSize;
+    
+    // Extract frame images and prepare for compositing
+    for (let i = 0; i < selectedFrames.length; i++) {
+      const frameBuffer = await selectedFrames[i].getBuffer();
+      
+      // Process each frame to consistent size
+      const resizedFrame = await sharp(frameBuffer)
+        .resize(frameSize, frameSize, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+        .toBuffer();
+      
+      // Calculate position in grid
+      const row = Math.floor(i / gridSize);
+      const col = i % gridSize;
+      const x = col * frameSize;
+      const y = row * frameSize;
       
       compositeOps.push({ 
-        input: buffer, 
+        input: resizedFrame, 
         top: y, 
         left: x 
       });
-    });
+      
+      // Add frame number overlay (as a separate composite operation)
+      const textBuffer = await sharp({
+        create: {
+          width: frameSize,
+          height: 30,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0.5 }
+        }
+      })
+      .composite([{
+        input: { 
+          text: {
+            text: `Frame ${i + 1}`,
+            font: 'Arial',
+            fontSize: 18,
+            rgba: true
+          }
+        },
+        top: 5,
+        left: 10
+      }])
+      .toBuffer();
+      
+      compositeOps.push({ 
+        input: textBuffer, 
+        top: y + frameSize - 30, 
+        left: x 
+      });
+    }
     
     // Create the composite image
     const outputBuffer = await sharp({
       create: {
-        width: 1024,
-        height: 1024,
+        width: totalSize,
+        height: totalSize,
         channels: 4,
         background: { r: 255, g: 255, b: 255, alpha: 1 }
       }
@@ -167,7 +201,7 @@ async function createFrames(prompt) {
     
     return {
       success: false,
-      error: "To implement the /frames command, you need to set up an API key for an image generation service like Stability AI. Add STABILITY_API_KEY to your .env file and uncomment the implementation code in commands.js."
+      error: "To implement the /frames command for extracting GIF frames, you need to install and configure 'gif-frames' and 'sharp' libraries. Add these dependencies to your project and uncomment the implementation code in commands.js."
     };
   } catch (error) {
     console.error('Error creating frames:', error.message);

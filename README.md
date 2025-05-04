@@ -8,7 +8,7 @@ A Discord bot that downloads content from various platforms using Cobalt.tools a
 - **Various Formats**: Support for both audio (MP3) and video (MP4) downloads
 - **Assyst-like Commands**:
   - `/gif` - Generate an animated GIF from a text prompt
-  - `/frames` - Generate a grid of image frames from a text prompt
+  - `/frames` - Extract frames from a GIF and display them in a grid
   - `/heartlocket` - Create a heart locket with two images or prompts
   - `/paint` - Transform a reference image using a text prompt
 
