@@ -1,15 +1,16 @@
-# Discord Downloader Bot
+# Discord Downloader Bot with Assyst-like Commands
 
-A Discord bot that can download content from various platforms using Cobalt.tools and implements Assyst-like commands such as `/gif`, `/frames`, `/heartlocket`, and `/paint`.
+A Discord bot that downloads content from various platforms using Cobalt.tools and implements commands similar to Assyst: `/gif`, `/frames`, `/heartlocket`, and `/paint`.
 
 ## Features
 
-- Download content from various platforms using Cobalt.tools
-- Generate AI content with commands similar to Assyst:
-  - `/gif` - Generate a GIF based on a prompt
-  - `/frames` - Generate frames based on a prompt
-  - `/heartlocket` - Create a heart locket with two images
-  - `/paint` - Paint an image based on a reference and prompt
+- **Content Download**: Download media from YouTube, TikTok, Twitter, Instagram, and more
+- **Various Formats**: Support for both audio (MP3) and video (MP4) downloads
+- **Assyst-like Commands**:
+  - `/gif` - Generate an animated GIF from a text prompt
+  - `/frames` - Generate a grid of image frames from a text prompt
+  - `/heartlocket` - Create a heart locket with two images or prompts
+  - `/paint` - Transform a reference image using a text prompt
 
 ## Setup Instructions
 
@@ -17,75 +18,126 @@ A Discord bot that can download content from various platforms using Cobalt.tool
 
 - [Node.js](https://nodejs.org/) version 16.9.0 or higher
 - A Discord bot token (create one at [Discord Developer Portal](https://discord.com/developers/applications))
+- (Optional) API keys for AI services if you want full functionality of AI commands
 
-### Installation
+### Quick Start
 
-1. Clone this repository or download the source code
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Create a `.env` file in the root directory with the following content:
+1. Add your Discord token to the `.env` file:
    ```
    DISCORD_TOKEN=your-discord-bot-token
    ```
 
-### Setting Up the Discord Bot
+2. Verify your token works:
+   ```
+   node verify-token.js
+   ```
+
+3. Start the bot:
+   ```
+   node run-bot.js
+   ```
+
+### Step-by-Step Setup
+
+#### Creating a Discord Bot
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application" and give it a name
+2. Click "New Application" and name it
 3. Go to the "Bot" tab and click "Add Bot"
-4. Under the "Privileged Gateway Intents" section, enable:
-   - "Server Members Intent"
-   - "Message Content Intent"
-5. Go to the "OAuth2" tab, then "URL Generator"
-6. Select the following scopes:
-   - `bot`
-   - `applications.commands`
-7. Select the following bot permissions:
-   - "Send Messages"
-   - "Attach Files"
-   - "Embed Links"
-   - "Use Slash Commands"
-8. Copy the generated URL and open it in your browser to add the bot to your server
+4. Under "Privileged Gateway Intents", enable:
+   - Message Content Intent
+   - Server Members Intent
+   - Presence Intent
+5. Click "Reset Token" and copy your token
+6. Add it to the `.env` file as shown above
 
-### AI Service Integration (Optional)
+#### Adding Bot to Your Server
 
-For the AI-based commands to work fully, you'll need to integrate with actual AI services. The placeholder implementations in the code provide guidance on where to add these integrations.
+1. Go to OAuth2 > URL Generator in the Developer Portal
+2. Select scopes: `bot`, `applications.commands`
+3. Select bot permissions:
+   - Send Messages
+   - Embed Links
+   - Attach Files
+   - Use Slash Commands
+4. Copy the generated URL and open it in a browser
+5. Select your server and authorize the bot
 
-Popular options include:
-- [Replicate](https://replicate.com/)
-- [Stability AI](https://stability.ai/)
-- Custom APIs
+### Testing the Bot
 
-## Running the Bot
+Before running the full bot, you can test individual components:
 
-```
-node bot.js
-```
-
-The bot should now be online and ready to use in your Discord server!
+- Test Discord token: `node verify-token.js`
+- Test download capabilities: `node test-download.js`
+- Test the full configuration: `node test-bot.js`
 
 ## Using the Bot
 
 The bot provides the following slash commands:
 
-- `/download url:[URL] format:[mp3 or mp4]` - Download content from a URL using Cobalt.tools
-- `/gif prompt:[text]` - Generate a GIF based on your prompt
-- `/frames prompt:[text]` - Generate frames based on your prompt
-- `/heartlocket first:[image1] second:[image2]` - Create a heart locket with two images
-- `/paint reference:[image] prompt:[text]` - Paint an image based on a reference and prompt
+### Download Command
+```
+/download url:[URL] format:[mp3 or mp4]
+```
+Downloads content from various platforms like YouTube, TikTok, Twitter, Instagram, etc.
 
-## Notes about Functionality
+### AI Generation Commands
+Note: These require API keys to be fully functional
 
-- The Cobalt download functionality is fully implemented and works with various platforms
-- The AI commands (gif, frames, heartlocket, paint) are provided as placeholders and require integration with actual AI services to be fully functional
-- You'll need to add your own API keys for any AI services you want to use
+```
+/gif prompt:[text]
+```
+Generates an animated GIF based on your text prompt.
+
+```
+/frames prompt:[text]
+```
+Creates a grid of image frames based on your text prompt.
+
+```
+/heartlocket first:[image1] second:[image2]
+```
+Creates a heart locket with two images. Can accept image URLs or text prompts.
+
+```
+/paint reference:[image] prompt:[text]
+```
+Transforms a reference image according to your text prompt.
+
+## Implementing AI Features
+
+The bot includes commented code that shows how to implement the AI features. To enable them:
+
+1. Sign up for an AI service like Replicate or Stability AI
+2. Add your API key to the `.env` file:
+   ```
+   REPLICATE_API_KEY=your-replicate-key
+   STABILITY_API_KEY=your-stability-key
+   ```
+3. Uncomment the implementation code in `commands.js`
+
+## Supported Platforms for Download
+
+- YouTube (videos and shorts)
+- TikTok (videos and audio)
+- Twitter/X (videos, GIFs)
+- Instagram (posts, reels, stories)
+- Facebook (videos, reels)
+- Reddit (videos)
+- SoundCloud (audio)
+- And many more!
+
+## Troubleshooting
+
+- **Bot not connecting**: Check your Discord token in the `.env` file
+- **Commands not appearing**: Make sure you've invited the bot with the correct permissions
+- **Download errors**: Some URLs may be restricted or region-locked
+- **AI commands not working**: You need to add API keys and uncomment the code in `commands.js`
 
 ## Disclaimer
 
-This bot is provided for educational purposes only. Make sure to comply with the terms of service of any platform you're downloading content from.
+This bot is provided for educational purposes only. Make sure to comply with the terms of service of any platform you download content from and any AI services you use.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
