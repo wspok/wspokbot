@@ -90,9 +90,9 @@ Note: These require API keys to be fully functional
 Generates an animated GIF based on your text prompt.
 
 ```
-/frames prompt:[text]
+/frames gif_url:[URL]
 ```
-Creates a grid of image frames based on your text prompt.
+Extracts frames from a GIF and displays them in a grid.
 
 ```
 /heartlocket first:[image1] second:[image2]
