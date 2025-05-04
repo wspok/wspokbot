@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, Partials, Events, ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { downloadFromCobalt } = require('./cobalt');
-const { createGif, createFrames, createHeartlocket, createPaint } = require('./commands');
+const { createGif, createFrames, createHeartlocket, createGenerate, createPaint } = require('./commands');
 const fs = require('fs');
 const path = require('path');
 
@@ -96,8 +96,21 @@ client.once(Events.ClientReady, async (c) => {
         type: ApplicationCommandType.ChatInput,
       },
       {
+        name: 'generate',
+        description: 'Generate an image based on a text prompt',
+        options: [
+          {
+            name: 'prompt',
+            description: 'The prompt for image generation',
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          }
+        ],
+        type: ApplicationCommandType.ChatInput,
+      },
+      {
         name: 'paint',
-        description: 'Paint an image based on a reference and prompt',
+        description: 'Transform a reference image into a painting style',
         options: [
           {
             name: 'reference',
@@ -107,7 +120,7 @@ client.once(Events.ClientReady, async (c) => {
           },
           {
             name: 'prompt',
-            description: 'The prompt for painting',
+            description: 'The prompt for painting style',
             type: ApplicationCommandOptionType.String,
             required: true,
           }
@@ -292,6 +305,44 @@ client.on(Events.InteractionCreate, async (interaction) => {
         } catch (error) {
           console.error('Heart locket generation error:', error);
           await interaction.editReply('An error occurred while generating the heart locket.');
+        }
+        break;
+      }
+      
+      case 'generate': {
+        const prompt = options.getString('prompt');
+        
+        if (!prompt) {
+          await interaction.editReply('Please provide a prompt for image generation.');
+          return;
+        }
+        
+        try {
+          const result = await createGenerate(prompt);
+          if (result.success) {
+            const attachment = new AttachmentBuilder(result.filePath, { name: 'generated.png' });
+            
+            const embed = new EmbedBuilder()
+              .setTitle('Image Generated')
+              .setDescription(`Generated image for: ${prompt}`)
+              .setColor('#9C59B6');
+            
+            await interaction.editReply({ embeds: [embed], files: [attachment] });
+            
+            // Clean up
+            setTimeout(() => {
+              try {
+                fs.unlinkSync(result.filePath);
+              } catch (err) {
+                console.error('Failed to delete file:', err);
+              }
+            }, 5000);
+          } else {
+            await interaction.editReply(`Failed to generate image: ${result.error}`);
+          }
+        } catch (error) {
+          console.error('Image generation error:', error);
+          await interaction.editReply('An error occurred while generating the image.');
         }
         break;
       }

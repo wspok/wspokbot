@@ -277,9 +277,62 @@ async function createHeartlocket(first, second) {
 }
 
 /**
- * Create a painted image based on a reference and prompt (similar to Assyst /paint command)
+ * Create a generated image from a text prompt (similar to Assyst /generate command)
+ * @param {string} prompt - The prompt for image generation
+ * @returns {Promise<{success: boolean, filePath?: string, error?: string}>}
+ */
+async function createGenerate(prompt) {
+  try {
+    console.log(`Generating image with prompt: ${prompt}`);
+    
+    // Implementation pattern for text-to-image generation (commented out as it requires an API key)
+    /*
+    // Call a text-to-image API like Stability AI
+    const response = await axios.post('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+      text_prompts: [{ text: prompt }],
+      cfg_scale: 7,
+      height: 1024,
+      width: 1024,
+      samples: 1,
+      steps: 30,
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.STABILITY_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+    });
+    
+    // Get the generated image
+    const generatedImage = Buffer.from(response.data.artifacts[0].base64, 'base64');
+    
+    // Save the image
+    const filePath = path.join(tempDir, `generate_${Date.now()}.png`);
+    fs.writeFileSync(filePath, generatedImage);
+    
+    return {
+      success: true,
+      filePath: filePath,
+    };
+    */
+    
+    return {
+      success: false,
+      error: "To implement the /generate command, you need to set up an API key for an image generation service like Stability AI. Add STABILITY_API_KEY to your .env file and uncomment the implementation code in commands.js."
+    };
+  } catch (error) {
+    console.error('Error generating image:', error.message);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Create a painted version of an image (similar to Assyst /paint command)
  * @param {string} reference - The reference image URL
- * @param {string} prompt - The prompt for painting
+ * @param {string} prompt - The prompt for painting style
  * @returns {Promise<{success: boolean, filePath?: string, error?: string}>}
  */
 async function createPaint(reference, prompt) {
@@ -293,7 +346,7 @@ async function createPaint(reference, prompt) {
       };
     }
     
-    // Implementation pattern for image-to-image generation (commented out as it requires an API key)
+    // Implementation pattern for painting-style transformation (commented out as it requires an API key)
     /*
     // Download the reference image
     const response = await axios.get(reference, { responseType: 'arraybuffer' });
@@ -302,15 +355,17 @@ async function createPaint(reference, prompt) {
     // Convert to base64 for the API
     const base64Image = referenceBuffer.toString('base64');
     
-    // Call an image-to-image API like Stability AI
+    // Call an image-to-image API with painting style parameters
     const response = await axios.post('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image', {
-      text_prompts: [{ text: prompt }],
+      text_prompts: [{ 
+        text: `${prompt}, oil painting style, artistic, detailed brushstrokes, canvas texture` 
+      }],
       init_image: base64Image,
       init_image_mode: "IMAGE_STRENGTH",
-      image_strength: 0.35, // How much to preserve of the original image
-      cfg_scale: 7,
+      image_strength: 0.6, // Higher for more stylization
+      cfg_scale: 7.5,
       samples: 1,
-      steps: 30,
+      steps: 40,
     }, {
       headers: {
         'Authorization': `Bearer ${process.env.STABILITY_API_KEY}`,
@@ -386,6 +441,7 @@ module.exports = {
   createGif,
   createFrames,
   createHeartlocket,
+  createGenerate,
   createPaint,
   isValidUrl,
   downloadImage,

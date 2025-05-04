@@ -100,9 +100,14 @@ Creates a grid of image frames based on your text prompt.
 Creates a heart locket with two images. Can accept image URLs or text prompts.
 
 ```
+/generate prompt:[text]
+```
+Creates a new image directly from your text prompt.
+
+```
 /paint reference:[image] prompt:[text]
 ```
-Transforms a reference image according to your text prompt.
+Transforms a reference image into a painting style guided by your text prompt.
 
 ## Implementing AI Features
 

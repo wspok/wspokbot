@@ -40,4 +40,5 @@ console.log('\x1b[0m%s\x1b[0m', '/download url:[URL] format:[mp3/mp4] - Download
 console.log('\x1b[0m%s\x1b[0m', '/gif prompt:[text] - Generate a GIF based on your prompt');
 console.log('\x1b[0m%s\x1b[0m', '/frames prompt:[text] - Generate frames based on your prompt');
 console.log('\x1b[0m%s\x1b[0m', '/heartlocket first:[image1] second:[image2] - Create a heart locket');
-console.log('\x1b[0m%s\x1b[0m', '/paint reference:[image] prompt:[text] - Paint an image based on a reference');
+console.log('\x1b[0m%s\x1b[0m', '/generate prompt:[text] - Generate an image from a text prompt');
+console.log('\x1b[0m%s\x1b[0m', '/paint reference:[image] prompt:[text] - Transform an image into a painting style');
