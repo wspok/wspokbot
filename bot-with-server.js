@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, Partials, Events, ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { downloadFromCobalt } = require('./cobalt');
-const { createGif, createFrames, createHeartlocket, createGenerate, createPaint } = require('./commands');
+const { createGif, createFrames, createHeartlocket, createGenerate, createPaint, createDonut } = require('./commands');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
@@ -134,6 +134,19 @@ client.once(Events.ClientReady, async (c) => {
           {
             name: 'prompt',
             description: 'The prompt for painting style',
+            type: ApplicationCommandOptionType.String,
+            required: true,
+          }
+        ],
+        type: ApplicationCommandType.ChatInput,
+      },
+      {
+        name: 'donut',
+        description: 'Place a user\'s profile picture behind a donut',
+        options: [
+          {
+            name: 'profile_url',
+            description: 'The URL of the user\'s profile picture',
             type: ApplicationCommandOptionType.String,
             required: true,
           }
@@ -397,6 +410,45 @@ client.on(Events.InteractionCreate, async (interaction) => {
         } catch (error) {
           console.error('Paint generation error:', error);
           await interaction.editReply('An error occurred while generating the painting.');
+        }
+        break;
+      }
+      
+      case 'donut': {
+        const profileUrl = options.getString('profile_url');
+        
+        if (!profileUrl) {
+          await interaction.editReply('Please provide a valid profile picture URL.');
+          return;
+        }
+        
+        try {
+          const result = await createDonut(profileUrl);
+          if (result.success) {
+            const attachment = new AttachmentBuilder(result.filePath, { name: 'donut_profile.png' });
+            
+            const embed = new EmbedBuilder()
+              .setTitle('Donut Profile Picture')
+              .setDescription('Created a donut profile picture effect')
+              .setColor('#8B4513') // Brown color for donut
+              .setImage('attachment://donut_profile.png');
+            
+            await interaction.editReply({ embeds: [embed], files: [attachment] });
+            
+            // Clean up
+            setTimeout(() => {
+              try {
+                fs.unlinkSync(result.filePath);
+              } catch (err) {
+                console.error('Failed to delete file:', err);
+              }
+            }, 5000);
+          } else {
+            await interaction.editReply(`Failed to create donut profile: ${result.error}`);
+          }
+        } catch (error) {
+          console.error('Donut profile error:', error);
+          await interaction.editReply('An error occurred while creating the donut profile picture.');
         }
         break;
       }

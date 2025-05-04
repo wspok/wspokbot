@@ -122,6 +122,11 @@ Creates a new image directly from your text prompt.
 ```
 Transforms a reference image into a painting style guided by your text prompt.
 
+```
+/donut profile_url:[image_url]
+```
+Places a user's profile picture behind a donut image for a fun visual effect.
+
 ## Implementing AI Features
 
 The bot includes commented code that shows how to implement the AI features. To enable them:

@@ -461,6 +461,94 @@ async function downloadImage(url, filePath) {
 }
 
 /**
+ * Creates a donut profile picture effect by placing user's profile picture behind a donut
+ * @param {string} profileUrl - The URL of the user's profile picture
+ * @returns {Promise<{success: boolean, filePath?: string, error?: string}>}
+ */
+async function createDonut(profileUrl) {
+  try {
+    console.log(`Creating donut profile picture with URL: ${profileUrl}`);
+    
+    if (!isValidUrl(profileUrl)) {
+      return {
+        success: false,
+        error: "Please provide a valid profile picture URL"
+      };
+    }
+    
+    // Download the profile picture
+    const response = await axios.get(profileUrl, { responseType: 'arraybuffer' });
+    const profileBuffer = Buffer.from(response.data);
+    
+    // Load the donut image (transparent PNG)
+    const donutPath = path.join(__dirname, 'assets', 'donut.png');
+    
+    if (!fs.existsSync(donutPath)) {
+      return {
+        success: false,
+        error: "Donut image not found. Please make sure assets/donut.png exists."
+      };
+    }
+    
+    // Path for the output file
+    const outputPath = path.join(tempDir, `donut_profile_${Date.now()}.png`);
+    
+    // Use the canvas library (simpler than some alternatives for basic image manipulation)
+    const { createCanvas, loadImage } = require('canvas');
+    
+    try {
+      // Load the images
+      const [profileImage, donutImage] = await Promise.all([
+        loadImage(profileBuffer),
+        loadImage(donutPath)
+      ]);
+      
+      // Create a canvas large enough for both images
+      const canvasSize = Math.max(profileImage.width, profileImage.height, donutImage.width, donutImage.height);
+      const canvas = createCanvas(canvasSize, canvasSize);
+      const ctx = canvas.getContext('2d');
+      
+      // Draw background color (optional)
+      ctx.fillStyle = 'transparent';
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+      
+      // Calculate positions to center the images
+      const profileX = (canvasSize - profileImage.width) / 2;
+      const profileY = (canvasSize - profileImage.height) / 2;
+      const donutX = (canvasSize - donutImage.width) / 2;
+      const donutY = (canvasSize - donutImage.height) / 2;
+      
+      // Draw profile image (background layer)
+      ctx.drawImage(profileImage, profileX, profileY);
+      
+      // Draw donut image (foreground layer)
+      ctx.drawImage(donutImage, donutX, donutY);
+      
+      // Save the combined image
+      const buffer = canvas.toBuffer('image/png');
+      fs.writeFileSync(outputPath, buffer);
+      
+      return {
+        success: true,
+        filePath: outputPath
+      };
+    } catch (err) {
+      console.error('Error processing images:', err);
+      return {
+        success: false,
+        error: "Error processing images. The canvas library may need to be installed: npm install canvas"
+      };
+    }
+  } catch (error) {
+    console.error('Error creating donut profile picture:', error.message);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
  * Utility function to generate an image from a text prompt
  * (This would connect to an AI service in a real implementation)
  * @param {string} prompt - The prompt to generate an image from
@@ -477,6 +565,7 @@ module.exports = {
   createHeartlocket,
   createGenerate,
   createPaint,
+  createDonut,
   isValidUrl,
   downloadImage,
 };
