@@ -27,14 +27,27 @@ A Discord bot that downloads content from various platforms using Cobalt.tools a
    DISCORD_TOKEN=your-discord-bot-token
    ```
 
-2. Verify your token works:
+2. Verify your token works by running:
+   ```
+   ./verify-discord-token.sh
+   ```
+   or
    ```
    node verify-token.js
    ```
 
-3. Start the bot:
+3. Start the bot by running:
+   ```
+   ./start-discord-bot.sh
+   ```
+   or
    ```
    node run-bot.js
+   ```
+
+4. To test the download functionality separately:
+   ```
+   ./test-download-function.sh
    ```
 
 ### Step-by-Step Setup
